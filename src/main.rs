@@ -16,6 +16,7 @@
 
 // cargo run -- -q -ex 'target remote :3333' -ex 'load' -ex 'set print asm-demangle on' -ex 'set style sources off' -ex 'b main' -ex 'c' target/thumbv7em-none-eabihf/debug/stm32
 
+// https://github.com/stm32-rs/stm32f1xx-hal
 // https://zhuanlan.zhihu.com/p/51733085
 // https://www.bilibili.com/read/cv16680191/
 
@@ -35,6 +36,8 @@ use nb::block;
 use cortex_m_rt::entry;
 use stm32f1xx_hal::{pac, prelude::*, timer::Timer};
 
+
+// heml
 #[entry]
 fn main() -> ! {
     // Get access to the core peripherals from the cortex-m crate
@@ -52,11 +55,21 @@ fn main() -> ! {
     let clocks = rcc.cfgr.freeze(&mut flash.acr);
 
     // Acquire the GPIOC peripheral
-    let mut gpioc = dp.GPIOC.split();
 
-    // Configure gpio C pin 13 as a push-pull output. The `crh` register is passed to the function
-    // in order to configure the port. For pins 0-7, crl should be passed instead.
+    // // Configure gpio C pin 13 as a push-pull output. The `crh` register is passed to the function
+    // // in order to configure the port. For pins 0-7, crl should be passed instead.
+    
+    let mut gpioc = dp.GPIOC.split();
     let mut led = gpioc.pc13.into_push_pull_output(&mut gpioc.crh);
+
+  //   let mut gpiob = dp.GPIOB.split();
+  // let mut led = gpiob.pb12.into_push_pull_output(&mut gpiob.crh);
+
+    // let mut gpiod = dp.GPIOD.split();
+    // let mut led = gpiod.pd2.into_push_pull_output(&mut gpiod.crl);
+
+
+
     // Configure the syst timer to trigger an update every second
     let mut timer = Timer::syst(cp.SYST, &clocks).counter_hz();
     timer.start(1.Hz()).unwrap();
